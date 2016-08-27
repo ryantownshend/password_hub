@@ -9,9 +9,18 @@ Commandline password storage and retrieval tool.
     pip install cryptography
     pip install PyYAML
     pip install pytest
+    pip install pyperclip
 
 ## Documentation
 
+Commandline UI by click :
+
+<http://click.pocoo.org/6/>
+
+File crypto :
+
 <https://cryptography.io/en/latest/>
 
-<http://datamelon.io/blog/2015/secure-symmetric-encryption-in-python.html>
+Clipboard integration provided by :
+
+<https://github.com/asweigart/pyperclip>

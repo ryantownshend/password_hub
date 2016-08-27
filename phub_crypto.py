@@ -17,10 +17,11 @@ log = logging.getLogger(__name__)
 
 class PhubCrypto:
 
-    def __init__(self, salt):
+    def __init__(self, salt, password):
         """__init__."""
-        log.debug('__init__')
-        self.salt = bytes(salt, 'utf-8')
+        log.debug('PhubCrypto __init__ : %s' % salt)
+        self.salt = salt
+        self.password = password
 
         self.kdf = PBKDF2HMAC(
             algorithm=hashes.SHA256(),
@@ -32,30 +33,33 @@ class PhubCrypto:
         self.key = None
         self.fernet = None
 
-    def set_key(self, password):
-        """setup_salted password."""
-        log.debug('set_key')
         self.key = base64.urlsafe_b64encode(
-            self.kdf.derive(bytes(password, 'utf-8'))
+            self.kdf.derive(bytes(self.password, 'utf-8'))
         )
         self.fernet = Fernet(self.key)
 
     def encrypt(self, thing):
-        """encrypt the thing."""
+        """
+        encrypt the thing.
+        input a clear text string
+        return a ciphered string
+        """
         log.debug('encrypt')
         if self.fernet:
             return self.fernet.encrypt(bytes(thing, 'utf-8'))
-        else:
-            error = "set_key(password) before attempting operation"
-            log.error(error)
-            raise ValueError(error)
 
     def decrypt(self, thing):
-        """decrypt the thing."""
+        """
+        decrypt the thing.
+        input a ciphered string
+        Return a clear text string
+        """
         log.debug('decrypt')
         if self.fernet:
-            return self.fernet.decrypt(thing).decode('utf-8')
-        else:
-            error = "set_key(password) before attempting operation"
-            log.error(error)
-            raise ValueError(error)
+            bytes_thing = bytes(thing, 'utf-8')
+            bytes_product = self.fernet.decrypt(bytes_thing)
+            # product = bytes_product.decode('utf-8')
+            product = str(bytes_product, 'utf-8')
+            return product
+
+            # return self.fernet.decrypt(bytes_thing))

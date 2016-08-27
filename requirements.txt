@@ -1,0 +1,6 @@
+click>=6.6
+click-log>=0.1.4
+cryptography>=1.4
+PyYAML>=3.11
+pytest>=3.0.1
+pyperclip>=1.5.27
