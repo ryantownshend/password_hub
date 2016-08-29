@@ -26,6 +26,7 @@ class PasswordHub:
         self.password = password
         self.file = phub_file
         self.crypto = PhubCrypto(self.salt, self.password)
+
         self.data = self.load_data(phub_file)
 
     def load_data(self, phub_file):
@@ -44,15 +45,15 @@ class PasswordHub:
                 with open(phub_file, 'r') as f:
                     cipher_text = f.read()
                     clear_text = self.crypto.decrypt(cipher_text)
-                    product = yaml.load(clear_text)
+                    product = self.yaml_to_data(clear_text)
 
             except yaml.YAMLError as exc:
                 log.error("Error in data file: %s" % exc)
-                sys.exit(3)
+                raise IOError("Error in data file: %s" % exc)
 
             except InvalidToken:
                 log.error('Invalid password')
-                sys.exit(2)
+                raise IOError('Invalid password')
 
         return product
 
@@ -60,12 +61,22 @@ class PasswordHub:
         """save the data to the file."""
         log.debug('save_data %s' % self.file)
 
-        yaml_data = yaml.dump(self.data, default_flow_style=False)
+        # yaml_data = yaml.dump(self.data, default_flow_style=False)
+        yaml_data = self.data_to_yaml()
 
         cipher_text = self.crypto.encrypt(yaml_data)
         with open(self.file, 'wb') as f:
             f.write(cipher_text)
         f.close()
+
+    def data_to_yaml(self):
+        """translate data to yaml_string in cleartext."""
+        yaml_data = yaml.dump(self.data, default_flow_style=False)
+        return yaml_data
+
+    def yaml_to_data(self, yaml_string):
+        """translate clear text yaml string to data."""
+        return yaml.load(yaml_string)
 
     def list_entries(self):
         """return list of entries."""

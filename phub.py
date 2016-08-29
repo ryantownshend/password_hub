@@ -11,6 +11,7 @@ For the first round lets get the file sorted, then cipher it
 """
 
 import os
+import sys
 import logging
 import click
 import click_log
@@ -19,6 +20,20 @@ import pyperclip
 from password_hub import PasswordHub
 
 log = logging.getLogger()
+
+
+def check_file_populated(filename):
+    """check if the filename exists and has data."""
+    exists = False
+    try:
+        size = os.path.getsize(filename)
+        if size > 0:
+            exists = True
+
+    except FileNotFoundError:
+        exists = False
+
+    return exists
 
 
 def load_config(phub_config_file):
@@ -67,11 +82,6 @@ def save_config(config_dict, phub_config_file):
     type=click.Path(),
     help="phub config yaml file, defaults to ~/phub_config.yaml",
 )
-@click.option(
-    '--password',
-    prompt=True,
-    hide_input=True
-)
 @click.pass_context
 @click_log.simple_verbosity_option()
 @click_log.init(log)
@@ -79,7 +89,6 @@ def cli(
     ctx,
     phub_file,
     phub_config_file,
-    password,
 ):
     """Storage and retrieval of login details."""
     log.debug('cli')
@@ -102,8 +111,25 @@ def cli(
         config['salt'] = salt
         save_config(config, phub_config_file)
 
-    ctx.obj = PasswordHub(config, phub_file, password)
-    log.debug('ctx.obj : %s' % ctx)
+    password = None
+
+    if not check_file_populated(phub_file):
+
+        password = click.prompt(
+            "Create file password",
+            hide_input=True,
+            confirmation_prompt=True
+        )
+
+    else:
+        password = click.prompt("Password", hide_input=True)
+
+    try:
+        ctx.obj = PasswordHub(config, phub_file, password)
+        log.debug('ctx.obj : %s' % ctx)
+    except IOError:
+        # log.error(ioe)
+        sys.exit(5)
 
 
 @cli.command('list', help="List all entries")
@@ -145,32 +171,50 @@ def create_entry(ctx, entry, username, password):
 
 
 @cli.command('edit', help="Edit existing entry")
-@click.option(
-    '--entry',
-    prompt="Asset to edit"
-)
-@click.option(
-    '--username',
-    prompt=True
-)
-@click.option(
-    '--password',
-    prompt="Password",
-    hide_input=True,
-    confirmation_prompt=True
-)
 @click.pass_obj
-def edit_entry(ctx, entry, username, password):
+def edit_entry(ctx):
     log.debug('edit_entry()')
 
-    log.debug('   entry : %s' % entry)
-    log.debug('username : %s' % username)
-    log.debug('password : %s' % password)
+    # log.debug('   entry : %s' % entry)
+    # log.debug('username : %s' % username)
+    # log.debug('password : %s' % password)
+    entry = click.prompt('Entry to edit')
+    entries = ctx.find_entries(entry)
+    print("len : %d" % len(entries))
+    if len(entries) > 1:
+        count = 0
+        for item in entries:
+            click.echo("(%d) %s" % (count, item['entry']))
+            count += 1
+        select = click.prompt("Select", type=int)
+        click.echo(select)
+        edit_entry_object(entries[select])
+        ctx.save_data()
 
-    try:
-        ctx.edit_entry(entry, username, password)
-    except ValueError as verr:
-        click.secho(str(verr), fg='red')
+    elif len(entries) == 1:
+        edit_entry_object(entries[0])
+        ctx.save_data()
+
+
+def edit_entry_object(entry):
+
+    entry['entry'] = click.prompt(
+        entry['entry'],
+        default=entry['entry']
+    )
+    entry['username'] = click.prompt(
+        entry['username'],
+        default=entry['username']
+    )
+    entry['password'] = click.prompt(
+        entry['password'],
+        default=entry['password']
+    )
+
+    # try:
+    #     ctx.edit_entry(entry, username, password)
+    # except ValueError as verr:
+    #     click.secho(str(verr), fg='red')
 
 
 @cli.command('get', help="Seek an entry")
@@ -196,5 +240,18 @@ def get_entries(ctx, entry):
         pyperclip.copy(items[0]['password'])
 
 
+@cli.command('export', help="Dump entries list as yaml")
+@click.pass_obj
+def export_entries(ctx):
+    """export entries."""
+    log.debug('export_entries')
+    print(ctx.data_to_yaml())
+
+@cli.command('import', help="Import yaml entries list")
+@click.pass_obj
+def import_entries(ctx):
+    """export entries."""
+    log.debug('import_entries')
+    print(ctx.yaml_to_data())
 if __name__ == '__main__':
     cli()
