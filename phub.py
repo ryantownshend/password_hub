@@ -247,11 +247,33 @@ def export_entries(ctx):
     log.debug('export_entries')
     print(ctx.data_to_yaml())
 
+
 @cli.command('import', help="Import yaml entries list")
 @click.pass_obj
 def import_entries(ctx):
     """export entries."""
     log.debug('import_entries')
     print(ctx.yaml_to_data())
+
+
+@cli.command('editfile', help="edit entries yaml in editor")
+@click.pass_obj
+def edit_file(ctx):
+    """export entries."""
+    log.debug('editfile')
+    yaml_data = ctx.data_to_yaml()
+
+    modified = click.edit(
+        text=yaml_data,
+        require_save=True,
+        extension=".yaml",
+    )
+
+    print(modified)
+    yaml_object = ctx.yaml_to_data(modified)
+    ctx.data = yaml_object
+    ctx.save_data()
+
+
 if __name__ == '__main__':
     cli()
