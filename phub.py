@@ -73,7 +73,7 @@ def save_config(config_dict, phub_config_file):
     'phub_file',
     default='DEFAULT',
     type=click.Path(),
-    help="phub yaml file, defaults to ~/Dropbox/PPJJ/.phub.yaml",
+    help="phub yaml file, defaults to ~/Dropbox/.phub.yaml",
 )
 @click.option(
     '--config',
@@ -98,7 +98,7 @@ def cli(
 #        log.debug("phub_config_file : %s" % phub_config_file)
 
     if phub_file in 'DEFAULT':
-        phub_file = os.path.expanduser("~/Dropbox/PPJJ/.phub.yaml")
+        phub_file = os.path.expanduser("~/Dropbox/.phub.yaml")
 #        log.debug("phub_file : %s" % phub_file)
 
     config = load_config(phub_config_file)
