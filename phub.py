@@ -40,7 +40,7 @@ def load_config(phub_config_file):
     """
     initialize / load config file.
     """
-    log.debug('config %s' % phub_config_file)
+#    log.debug('config %s' % phub_config_file)
     product = {}
 
     if os.path.isfile(phub_config_file):
@@ -73,14 +73,14 @@ def save_config(config_dict, phub_config_file):
     'phub_file',
     default='DEFAULT',
     type=click.Path(),
-    help="phub yaml file, defaults to ~/phub.yaml",
+    help="phub yaml file, defaults to ~/Dropbox/PPJJ/.phub.yaml",
 )
 @click.option(
     '--config',
     'phub_config_file',
     default='DEFAULT',
     type=click.Path(),
-    help="phub config yaml file, defaults to ~/phub_config.yaml",
+    help="phub config yaml file, defaults to ~/Dropbox/PPJJ/.phub_config.yaml",
 )
 @click.pass_context
 @click_log.simple_verbosity_option()
@@ -94,12 +94,12 @@ def cli(
     log.debug('cli')
 
     if phub_config_file in 'DEFAULT':
-        phub_config_file = os.path.expanduser("~/phub_config.yaml")
-        log.debug("phub_config_file : %s" % phub_config_file)
+        phub_config_file = os.path.expanduser("~/Dropbox/PPJJ/.phub_config.yaml")
+#        log.debug("phub_config_file : %s" % phub_config_file)
 
     if phub_file in 'DEFAULT':
-        phub_file = os.path.expanduser("~/phub.yaml")
-        log.debug("phub_file : %s" % phub_file)
+        phub_file = os.path.expanduser("~/Dropbox/PPJJ/.phub.yaml")
+#        log.debug("phub_file : %s" % phub_file)
 
     config = load_config(phub_config_file)
 
@@ -126,7 +126,7 @@ def cli(
 
     try:
         ctx.obj = PasswordHub(config, phub_file, password)
-        log.debug('ctx.obj : %s' % ctx)
+#        log.debug('ctx.obj : %s' % ctx)
     except IOError:
         # log.error(ioe)
         sys.exit(5)
@@ -160,9 +160,9 @@ def list_entries(ctx):
 def create_entry(ctx, entry, username, password):
     log.debug('create_entry()')
 
-    log.debug('   entry : %s' % entry)
-    log.debug('username : %s' % username)
-    log.debug('password : %s' % password)
+#    log.debug('   entry : %s' % entry)
+#    log.debug('username : %s' % username)
+#    log.debug('password : %s' % password)
 
     try:
         ctx.create_entry(entry, username, password)
@@ -224,8 +224,8 @@ def edit_entry_object(entry):
 )
 @click.pass_obj
 def get_entries(ctx, entry):
-    log.debug('get : %s' % entry)
-    log.debug('ctx : %s' % ctx)
+#    log.debug('get : %s' % entry)
+#    log.debug('ctx : %s' % ctx)
     items = ctx.find_entries(entry)
     for item in items:
         click.echo(

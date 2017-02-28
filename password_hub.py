@@ -36,7 +36,7 @@ class PasswordHub:
         if file exists, load data from it,
         else return an empty list
         """
-        log.debug('load_data %s' % phub_file)
+#        log.debug('load_data %s' % phub_file)
 
         product = []
 
@@ -59,7 +59,7 @@ class PasswordHub:
 
     def save_data(self):
         """save the data to the file."""
-        log.debug('save_data %s' % self.file)
+#        log.debug('save_data %s' % self.file)
 
         # yaml_data = yaml.dump(self.data, default_flow_style=False)
         yaml_data = self.data_to_yaml()
@@ -90,7 +90,7 @@ class PasswordHub:
 
     def find_entries(self, entry):
         """given entry name, return correct dictionary."""
-        log.debug('find_entries %s' % entry)
+#        log.debug('find_entries %s' % entry)
 
         product = []
         for item in self.data:
@@ -101,7 +101,7 @@ class PasswordHub:
 
     def create_entry(self, entry, username, password):
         """create new entry."""
-        log.debug('create_entry %s' % entry)
+#        log.debug('create_entry %s' % entry)
 
         # check for existing entry
         if self.find_entries(entry):
@@ -118,7 +118,7 @@ class PasswordHub:
 
     def edit_entry(self, entry, username, password):
         """edit existing entry."""
-        log.debug('edit_entry %s' % entry)
+#        log.debug('edit_entry %s' % entry)
 
         # check for existing entry
         entries = self.find_entries(entry)

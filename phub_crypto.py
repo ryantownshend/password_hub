@@ -19,7 +19,7 @@ class PhubCrypto:
 
     def __init__(self, salt, password):
         """__init__."""
-        log.debug('PhubCrypto __init__ : %s' % salt)
+#        log.debug('PhubCrypto __init__ : %s' % salt)
         self.salt = salt
         self.password = password
 
