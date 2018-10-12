@@ -19,7 +19,8 @@ import yaml
 import pyperclip
 from password_hub import PasswordHub
 
-log = logging.getLogger()
+log = logging.getLogger(__name__)
+click_log.basic_config(log)
 
 
 def check_file_populated(filename):
@@ -84,7 +85,6 @@ def save_config(config_dict, phub_config_file):
 )
 @click.pass_context
 @click_log.simple_verbosity_option()
-@click_log.init(log)
 def cli(
     ctx,
     phub_file,

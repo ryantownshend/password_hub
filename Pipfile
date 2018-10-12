@@ -1,0 +1,15 @@
+[[source]]
+url = "https://pypi.python.org/simple"
+verify_ssl = true
+name = "phub"
+
+[packages]
+click           = ">= 6.7"
+click-log       = ">= 0.2.0"
+cryptography    = ">=1.4"
+PyYAML          = ">=3.11"
+pytest          = ">=3.0.1"
+pyperclip       = ">=1.5.27"
+
+[dev-packages]
+pytest = "*"
